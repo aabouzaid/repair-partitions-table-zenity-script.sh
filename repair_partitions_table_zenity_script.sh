@@ -16,7 +16,7 @@ elif [[ ! -f /sbin/sfdisk ]]; then
 elif [[ ! -f /sbin/fixparts ]]; then
     required_packages+=(gdisk)
 fi
-zenity --error --text="Please install required packs!"
+zenity --error --text="Please install required packages!"
 /usr/bin/software-center ${required_packages[@]}
 
 #Select hard disk if there are many.
