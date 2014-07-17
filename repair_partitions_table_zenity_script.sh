@@ -30,8 +30,8 @@ harddisk=$(zenity --list \
   fi
 
 #Backup, restore or repair partitions table dialog.
-partition_tables_dialog () {
-partition_tables_action=$(zenity --list --radiolist \
+partitions_table_dialog () {
+partitions_table_action=$(zenity --list --radiolist \
  --title="What do you want to do?" \
  --column="   " --column="Action" \
     FALSE "Backup partitions table." \
@@ -52,11 +52,11 @@ check_exit_status () {
 
 while :
 do
-#Run partition tables dialog.
-partition_tables_dialog
+#Run partitions table dialog.
+partitions_table_dialog
 
 #Checking the user's choice. 
-case "$partition_tables_action" in
+case "$partitions_table_action" in
 #-------------------------------------------------------------
   "Backup partitions table.")
     #Dump the partitions of a device.
