@@ -10,15 +10,14 @@
 
 #Check if gksu, sfdisk and gdisk (fixparts) are installed.
 if [[ ! -f /usr/bin/gksu ]]; then
-    zenity --error --text="Please Install gksu!"
-    /usr/bin/software-center gksu
+    required_packages=(gksu)
 elif [[ ! -f /sbin/sfdisk ]]; then
-    zenity --error --text="Please Install sfdisk!"
-    /usr/bin/software-center util-linux
+    required_packages+=(util-linux)
 elif [[ ! -f /sbin/fixparts ]]; then
-    zenity --error --text="Please Install gdisk!"
-    /usr/bin/software-center gdisk
+    required_packages+=(gdisk)
 fi
+zenity --error --text="Please install required packs!"
+/usr/bin/software-center ${required_packages[@]}
 
 #Select hard disk if there are many.
 harddisk=$(zenity --list \
