@@ -4,20 +4,24 @@
 #
 # Simple script with Zenity GUI to backup, restore or repair partitions table.
 # Tested on Ubuntu 14.04 (and probably will work with Debian).
-# By Ahmed M. AbouZaid, July 2014, under MIT license.
-# 
+# By Ahmed M. AbouZaid (www.aabouzaid.com), July 2014, under MIT license.
+#
 ##############################################################
 
-#Check if gksu, sfdisk and gdisk (fixparts) are installed.
+#Check if gksu, sfdisk and gdisk (fixparts) are installed, and add missing package in array.
 if [[ ! -f /usr/bin/gksu ]]; then
-    required_packages=(gksu)
+  required_packages=(gksu)
 elif [[ ! -f /sbin/sfdisk ]]; then
-    required_packages+=(util-linux)
+  required_packages+=(util-linux)
 elif [[ ! -f /sbin/fixparts ]]; then
-    required_packages+=(gdisk)
+  required_packages+=(gdisk)
 fi
-zenity --error --text="Please install required packages!"
-/usr/bin/software-center ${required_packages[@]}
+
+#Check if there is any missing package and start Ubuntu Software Center to install it.
+if [[ ${#required_packages[@]} != 0 ]]; then
+  zenity --error --text="Please install required packages! Ubuntu Software Center will start with missing packages now."
+  /usr/bin/software-center ${required_packages[@]}
+fi
 
 #Select hard disk if there are many.
 harddisk=$(zenity --list \
@@ -25,29 +29,31 @@ harddisk=$(zenity --list \
  --column="Hard disk" --column="Size" \
     $(lsblk | grep disk | awk '{print "/dev/"$1,$4}')
 )
+
+#Check if user click "Cancel" before select the harddisk.
   if [[ $? = 1 ]]; then
     exit
   fi
 
 #Backup, restore or repair partitions table dialog.
 partitions_table_dialog () {
-partitions_table_action=$(zenity --list --radiolist \
- --title="What do you want to do?" \
- --column="   " --column="Action" \
-    FALSE "Backup partitions table." \
-    FALSE "Restore partitions table." \
-    FALSE "Repair partitions table."
-)
+  partitions_table_action=$(zenity --list --radiolist \
+    --title="What do you want to do?" \
+    --column=" " --column="Action" \
+      FALSE "Backup partitions table." \
+      FALSE "Restore partitions table." \
+      FALSE "Repair partitions table."
+  )
 }
 
 #Check exit status and return message in the case of success or fails.
 check_exit_status () {
-    if [[ $? = 0 ]]; then
-      zenity --info --text="Done"
-    else
-      /usr/bin/printf '=%.0s' {1..50} >> /tmp/sfdisk.log
-      zenity --error --text="Sorry! Unexpected error! Please check logs: /tmp/sfdisk.log"
-    fi
+  if [[ $? = 0 ]]; then
+    zenity --info --text="Done"
+   else
+    echo $(printf '=%.0s' {1..50}) >> /tmp/sfdisk.log
+    zenity --error --text="Sorry! Unexpected error! Please check logs: /tmp/sfdisk.log"
+  fi
 }
 
 while :
@@ -55,7 +61,7 @@ do
 #Run partitions table dialog.
 partitions_table_dialog
 
-#Checking the user's choice. 
+#Checking the user's choice.
 case "$partitions_table_action" in
 #-------------------------------------------------------------
   "Backup partitions table.")
@@ -66,7 +72,7 @@ case "$partitions_table_action" in
     if [[ $? = 0 ]]; then
       zenity --info --text="You can find partitions table backup file in your Home with name \"partitions_table_backup_$(date +%Y%m%d).dump\""
     else
-      /usr/bin/printf '=%.0s' {1..50} >> /tmp/sfdisk.log
+      echo $(printf '=%.0s' {1..50}) >> /tmp/sfdisk.log
       zenity --error --text="Sorry! Unexpected error! Please check logs: /tmp/sfdisk.log"
     fi
   ;;
