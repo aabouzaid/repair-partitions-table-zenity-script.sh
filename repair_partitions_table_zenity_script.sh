@@ -87,11 +87,8 @@ case "$partitions_table_action" in
 #-------------------------------------------------------------
   "Repair partitions table.")
     #Run Fixparts in non-interactive mode to repair partitions table.
-    /usr/bin/gksu /sbin/fixparts $harddisk 2> /tmp/repair_partitions_table_zenity_script.log << EOD
-Y
-w
-yes
-EOD
+    fixparts_options () { echo -e "Y\nw\nyes"; }
+    /usr/bin/gksu /sbin/fixparts $harddisk 2> /tmp/repair_partitions_table_zenity_script.log <<< "$(fixparts_options)"
 
     #Check exit status of previous command and return to main dialog.
     check_exit_status
