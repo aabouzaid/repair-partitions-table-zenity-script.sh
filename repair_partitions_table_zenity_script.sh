@@ -65,7 +65,7 @@ partitions_table_dialog
 case "$partitions_table_action" in
 #-------------------------------------------------------------
   "Backup partitions table.")
-    #Dump the partitions of a device.
+    #Dump the partitions of the harddisk.
     /usr/bin/gksu /sbin/sfdisk -d $harddisk > ~/partitions_table_backup_$(date +%Y%m%d).dump 2>> /tmp/repair_partitions_table_zenity_script.log
 
     #Check exit status of previous command and return to main dialog.
