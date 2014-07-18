@@ -51,8 +51,8 @@ check_exit_status () {
   if [[ $? = 0 ]]; then
     zenity --info --text="Done."
    else
-    echo $(printf '=%.0s' {1..50}) >> /tmp/repair_partitions_table_zenity_script.log
-    zenity --error --text="Sorry! Unexpected error! Please check logs: /tmp/repair_partitions_table_zenity_script.log"
+    echo $(printf '=%.0s' {1..50}) >> ~/repair_partitions_table_zenity_script.log
+    zenity --error --text="Sorry! Unexpected error! Please check logs: ~/repair_partitions_table_zenity_script.log"
   fi
 }
 
@@ -66,20 +66,20 @@ case "$partitions_table_action" in
 #-------------------------------------------------------------
   "Backup partitions table.")
     #Dump the partitions of the harddisk.
-    /usr/bin/gksu /sbin/sfdisk -d $harddisk > ~/partitions_table_backup_$(date +%Y%m%d).dump 2>> /tmp/repair_partitions_table_zenity_script.log
+    /usr/bin/gksu /sbin/sfdisk -d $harddisk > ~/partitions_table_backup_$(date +%Y%m%d).dump 2>> ~/repair_partitions_table_zenity_script.log
 
     #Check exit status of previous command and return to main dialog.
     if [[ $? = 0 ]]; then
       zenity --info --text="You can find partitions table backup file in your Home with name \"partitions_table_backup_$(date +%Y%m%d).dump\".\n\nPlease copy it in a safe place."
     else
-      echo $(printf '=%.0s' {1..50}) >> /tmp/repair_partitions_table_zenity_script.log
-      zenity --error --text="Sorry! Unexpected error! Please check logs: /tmp/repair_partitions_table_zenity_script.log"
+      echo $(printf '=%.0s' {1..50}) >> ~/repair_partitions_table_zenity_script.log
+      zenity --error --text="Sorry! Unexpected error! Please check logs: ~/repair_partitions_table_zenity_script.log"
     fi
   ;;
 #-------------------------------------------------------------
   "Restore partitions table.")
     #Restore the partitions table.
-    /usr/bin/gksu /sbin/sfdisk -f $harddisk < $(zenity --file-selection --title="Select partitions table dump file:") >> /tmp/repair_partitions_table_zenity_script.log 2>&1
+    /usr/bin/gksu /sbin/sfdisk -f $harddisk < $(zenity --file-selection --title="Select partitions table dump file:") >> ~/repair_partitions_table_zenity_script.log 2>&1
 
     #Check exit status of previous command and return to main dialog.
     check_exit_status
@@ -88,7 +88,7 @@ case "$partitions_table_action" in
   "Repair partitions table.")
     #Run Fixparts in non-interactive mode to repair partitions table.
     fixparts_options () { echo -e "Y\nw\nyes"; }
-    /usr/bin/gksu /sbin/fixparts $harddisk 2> /tmp/repair_partitions_table_zenity_script.log <<< "$(fixparts_options)"
+    /usr/bin/gksu /sbin/fixparts $harddisk 2>> ~/repair_partitions_table_zenity_script.log <<< "$(fixparts_options)"
 
     #Check exit status of previous command and return to main dialog.
     check_exit_status
