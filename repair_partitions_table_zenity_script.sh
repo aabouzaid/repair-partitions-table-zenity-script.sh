@@ -70,7 +70,7 @@ case "$partitions_table_action" in
 
     #Check exit status of previous command and return to main dialog.
     if [[ $? = 0 ]]; then
-      zenity --info --text="You can find partitions table backup file in your Home with name \"partitions_table_backup_$(date +%Y%m%d).dump\".\n\nPlease copy it in safe place."
+      zenity --info --text="You can find partitions table backup file in your Home with name \"partitions_table_backup_$(date +%Y%m%d).dump\".\n\nPlease copy it in a safe place."
     else
       echo $(printf '=%.0s' {1..50}) >> /tmp/repair_partitions_table_zenity_script.log
       zenity --error --text="Sorry! Unexpected error! Please check logs: /tmp/repair_partitions_table_zenity_script.log"
