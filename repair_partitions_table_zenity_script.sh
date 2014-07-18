@@ -24,10 +24,10 @@ if [[ ${#required_packages[@]} != 0 ]]; then
 fi
 
 #Select hard disk if there are many.
-harddisk=$(zenity --list \
+harddisk=$(zenity --list --radiolist\
  --title="Choose hard disk" \
- --column="Hard disk" --column="Size" \
-    $(lsblk | grep disk | awk '{print "/dev/"$1,$4}')
+ --column=" " --column="Hard disk" --column="Size" \
+    $(lsblk | grep disk | awk '{print "FALSE /dev/"$1,$4}')
 )
 
 #Check if user click "Cancel" before select the harddisk.
@@ -51,8 +51,8 @@ check_exit_status () {
   if [[ $? = 0 ]]; then
     zenity --info --text="Done"
    else
-    echo $(printf '=%.0s' {1..50}) >> /tmp/sfdisk.log
-    zenity --error --text="Sorry! Unexpected error! Please check logs: /tmp/sfdisk.log"
+    echo $(printf '=%.0s' {1..50}) >> /tmp/repair_partitions_table_zenity_script.log
+    zenity --error --text="Sorry! Unexpected error! Please check logs: /tmp/repair_partitions_table_zenity_script.log"
   fi
 }
 
@@ -61,25 +61,25 @@ do
 #Run partitions table dialog.
 partitions_table_dialog
 
-#Checking the user's choice.
+#Checking user's choice.
 case "$partitions_table_action" in
 #-------------------------------------------------------------
   "Backup partitions table.")
     #Dump the partitions of a device.
-    /usr/bin/gksu /sbin/sfdisk -d $harddisk > ~/partitions_table_backup_$(date +%Y%m%d).dump 2>> /tmp/sfdisk.log
+    /usr/bin/gksu /sbin/sfdisk -d $harddisk > ~/partitions_table_backup_$(date +%Y%m%d).dump 2>> /tmp/repair_partitions_table_zenity_script.log
 
     #Check exit status of previous command and return to main dialog.
     if [[ $? = 0 ]]; then
-      zenity --info --text="You can find partitions table backup file in your Home with name \"partitions_table_backup_$(date +%Y%m%d).dump\""
+      zenity --info --text="You can find partitions table backup file in your Home with name \"partitions_table_backup_$(date +%Y%m%d).dump\".\n\nPlease copy it in safe place."
     else
-      echo $(printf '=%.0s' {1..50}) >> /tmp/sfdisk.log
-      zenity --error --text="Sorry! Unexpected error! Please check logs: /tmp/sfdisk.log"
+      echo $(printf '=%.0s' {1..50}) >> /tmp/repair_partitions_table_zenity_script.log
+      zenity --error --text="Sorry! Unexpected error! Please check logs: /tmp/repair_partitions_table_zenity_script.log"
     fi
   ;;
 #-------------------------------------------------------------
   "Restore partitions table.")
     #Restore the partitions table.
-    /usr/bin/gksu /sbin/sfdisk -f $harddisk < $(zenity --file-selection --title="Select a File") >> /tmp/sfdisk.log 2>&1
+    /usr/bin/gksu /sbin/sfdisk -f $harddisk < $(zenity --file-selection --title="Select a File") >> /tmp/repair_partitions_table_zenity_script.log 2>&1
 
     #Check exit status of previous command and return to main dialog.
     check_exit_status
@@ -87,7 +87,7 @@ case "$partitions_table_action" in
 #-------------------------------------------------------------
   "Repair partitions table.")
     #Run Fixparts in non-interactive mode to repair partitions table.
-    /usr/bin/gksu /sbin/fixparts $harddisk << EOD
+    /usr/bin/gksu /sbin/fixparts $harddisk 2> /tmp/repair_partitions_table_zenity_script.log << EOD
 Y
 w
 yes
