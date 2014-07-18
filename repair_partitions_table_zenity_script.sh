@@ -79,7 +79,7 @@ case "$partitions_table_action" in
 #-------------------------------------------------------------
   "Restore partitions table.")
     #Restore the partitions table.
-    /usr/bin/gksu /sbin/sfdisk -f $harddisk < $(zenity --file-selection --title="Select a File") >> /tmp/repair_partitions_table_zenity_script.log 2>&1
+    /usr/bin/gksu /sbin/sfdisk -f $harddisk < $(zenity --file-selection --title="Select partitions table dump file:") >> /tmp/repair_partitions_table_zenity_script.log 2>&1
 
     #Check exit status of previous command and return to main dialog.
     check_exit_status
