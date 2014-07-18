@@ -49,7 +49,7 @@ partitions_table_dialog () {
 #Check exit status and return message in the case of success or fails.
 check_exit_status () {
   if [[ $? = 0 ]]; then
-    zenity --info --text="Done"
+    zenity --info --text="Done."
    else
     echo $(printf '=%.0s' {1..50}) >> /tmp/repair_partitions_table_zenity_script.log
     zenity --error --text="Sorry! Unexpected error! Please check logs: /tmp/repair_partitions_table_zenity_script.log"
